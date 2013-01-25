@@ -1,0 +1,34 @@
+<head>
+  <meta charset="utf-8">
+  <title>Minb</title>
+</head>
+<body>
+  <h1>Minb</h1>
+  <div class="screen">Loading...</div>
+  <script>
+    (function() {
+      var n = 2;
+      a.fbAppId = 'FB_APP_ID';
+      a.screen = function(screenFile, speed) {
+        if (n !== 2) return;  // don't allow more than one transition at a time
+        if (speed === undefined) speed = 300;
+        var $div = $('<div></div>').hide(); 
+        $('.screen').after($div);
+        function done() {
+          if (--n !== 0) return;
+          $('.screen').remove();
+          $div.addClass('screen');
+          $div.fadeIn(speed, function() { n = 2; });
+        }
+        $div.load(screenFile, done);
+        $('.screen').fadeOut(speed, done);
+      };
+    }());
+    if (m.creds === undefined) {
+      a.screen('login-0.html');
+    } else {
+      a.screen('title-0.html');
+    }
+  </script>
+</body>
+
