@@ -50,44 +50,17 @@ function find(filename) {
 exports.handle = function(req, res) {
   var file = find(url.parse(req.url).pathname);
   if (file === null) {
-    res.statusCode = 404;
-    res.end('not found');
-    return;
+    return app_http.replyNotFound(res);
   }
   if (req.headers['if-none-match'] === file.etag) {
-    res.writeHead(304, {
-      'Connection'       : 'keep-alive',
-      'Proxy-Connection' : 'keep-alive',
-      'Cache-Control'    : 'max-age=31536000',                               // 1 yr in secs
-      'Expires'          : new Date(Date.now() + 31536000000).toUTCString()  // 1 yr in msecs
-    });
-    res.end();
+    return app_http.replyNotModified(res);
   }
   if (file.gzip !== undefined && 
       req.headers['accept-encoding'] !== undefined && 
       req.headers['accept-encoding'].indexOf('gzip') !== -1) {
-    res.writeHead(200, {
-      'Content-Type'     : file.type,
-      'Content-Length'   : file.gzip.length,
-      'Pragma'           : 'public',
-      'Cache-Control'    : 'public, max-age=31536000', 
-      'Vary'             : 'Accept-Encoding', 
-      'Expires'          : new Date(Date.now() + 31536000000).toUTCString(),
-      'ETag'             : file.etag,
-      'Content-Encoding' : 'gzip'
-    });
-    res.end(file.gzip);
+    return app_http.replyCached(res, file.gzip, file.type, file.etag, 'gzip');
   } else {
-    res.writeHead(200, {
-      'Content-Type'   : file.type,
-      'Content-Length' : file.data.length,
-      'Pragma'         : 'public',
-      'Cache-Control'  : 'max-age=31536000',
-      'Vary'           : 'Accept-Encoding',
-      'Expires'        : new Date(Date.now() + 31536000000).toUTCString(),
-      'ETag'           : file.etag
-    });
-    res.end(file.data);
+    return app_http.replyCached(res, file.data, file.type, file.etag);
   }
 };
 
@@ -181,13 +154,11 @@ exports.handle = function(req, res) {
     start();
     fs.readFile(filename, function (err, data) {
       if (err) throw err;
-      var shasum = crypto.createHash('sha1');
-      shasum.update(data, 'binary');
       var file = {
         name: filename.substr(publicDir.length),
         type: ext.type,
         data: data,
-        etag: shasum.digest('hex')
+        etag: app_http.etag(data)
       };
       insert(file);
       if (ext.gzip === false) return end();

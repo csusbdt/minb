@@ -1,34 +1,21 @@
-var url    = require('url');
-var fs     = require('fs');
+var url      = require('url');
+var fs       = require('fs');
+var app_http = require('./app_http');
 
-var html;
+var body,
+    etag;
 
 exports.init = function(cb) {
   fs.readFile('templates/screen_container.html', 'utf8', function(err, file) {
     if (err) throw err;
-    html = file.replace("FB_APP_ID", process.env.FB_APP_ID);
+    var html = file.replace("FB_APP_ID", process.env.FB_APP_ID);
+    body = new Buffer(html, 'utf8');
+    etag = app_http.etag(body);
     cb();
   });
 };
 
-
-
-TODO: in the following, just return the html and set to cache 1 year
-
-
 exports.handle = function(req, res) {
-  var body;
-  if (creds) {
-    body = new Buffer(titleScreen.replace("MODEL", JSON.stringify(model)), 'utf8');
-  } else {
-    body = new Buffer(loginScreen.replace("MODEL", JSON.stringify(model)), 'utf8');
-  }
-  res.writeHead(200, {
-    'Content-Type'   : 'text/html',
-    'Content-Length' : body.length,
-    'Pragma'         : 'no-cache',
-    'Cache-Control'  : 'no-cache, no-store'
-  });
-  res.end(body);
+  app_http.replyCached(res, body, 'text/html', etag);
 };
 
