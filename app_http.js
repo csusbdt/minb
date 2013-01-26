@@ -9,7 +9,7 @@ var crypto = require('crypto');
 
 exports.etag = function(buffer) {
   var shasum = crypto.createHash('sha1');
-  shasum.update(data, 'binary');
+  shasum.update(buffer, 'binary');
   return shasum.digest('hex');
 }
 
@@ -52,7 +52,7 @@ exports.replyCached = function(res, buffer, contentType, etag, contentEncoding) 
       'ETag'             : etag
     });
   }
-  res.end(file.data);
+  res.end(buffer);
 };
 
 exports.replyNotModified = function(res) {

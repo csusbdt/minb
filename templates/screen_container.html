@@ -7,10 +7,11 @@
   <div class="screen">Loading...</div>
   <script>
     (function() {
-      var n = 2;
+      var n = -1;
       a.fbAppId = 'FB_APP_ID';
       a.screen = function(screenFile, speed) {
-        if (n !== 2) return;  // don't allow more than one transition at a time
+        if (n !== -1) return;  // don't allow more than one transition at a time
+        n = 2;
         if (speed === undefined) speed = 300;
         var $div = $('<div></div>').hide(); 
         $('.screen').after($div);
@@ -18,15 +19,16 @@
           if (--n !== 0) return;
           $('.screen').remove();
           $div.addClass('screen');
-          $div.fadeIn(speed, function() { n = 2; });
+          $div.fadeIn(speed, function() { n = -1; });
         }
         $div.load(screenFile, done);
         $('.screen').fadeOut(speed, done);
       };
     }());
-    if (m.creds === undefined) {
+    if (a.m === undefined) {
       a.screen('login-0.html');
     } else {
+      a.creds = JSON.parse(window.cookie['creds']);
       a.screen('title-0.html');
     }
   </script>

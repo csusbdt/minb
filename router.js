@@ -5,7 +5,7 @@ var req_screen_container  = require('./req_screen_container');
 var req_mem               = require('./req_mem');
 var req_file              = require('./req_file');
 
-var SCREEN_CONTAINER = '/1';
+var SCREEN_CONTAINER = '/1.html';
 
 function route(req, res) {
   var pathname = url.parse(req.url).pathname;

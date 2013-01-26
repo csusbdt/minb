@@ -2,7 +2,7 @@ var fs       = require('fs');
 var zlib     = require('zlib');
 var url      = require('url');
 var crypto   = require('crypto');
-var app_http = require('app_http');
+var app_http = require('./app_http');
 
 // This code returns "not found" when '..' appears in the url.
 

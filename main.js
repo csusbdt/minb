@@ -24,9 +24,9 @@ process.env.MONGO_HOST = process.env.MONGO_HOST .replace(' ', '');
 process.env.FB_APP_ID  = process.env.FB_APP_ID  .replace(' ', '');
 
 // Run intializations before starting router.
-var todo = 4;
+var n = 4;
 function onDone() {
-  if (--todo === 0) router.start();
+  if (--n === 0) router.start();
 }
 req_root             .init(onDone);
 req_screen_container .init(onDone);

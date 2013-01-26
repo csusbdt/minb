@@ -1,0 +1,53 @@
+<div id="fb-root"></div>
+<button id="login-btn">Facebook Login</button>
+<script>
+  $('#login-btn').click(function() {
+    FB.login(function(response) {
+      if (response.authResponse) {
+        console.log('?uid=' + response.authResponse.userID);
+        console.log('&token=' + response.authResponse.accessToken);
+        // a.screen('title-0.html');
+      } else {
+        console.log('user did not login');
+      }
+    });
+  });
+
+  (function() {
+    function fbInit(facebookAppId) {
+      FB.init({
+        appId      : app.cfg.fbAppId,
+        channelUrl : '://' + window.location.host + '/channel.html',
+        status     : false,  // check the login status upon init?
+        cookie     : false,  // set sessions cookies?
+        xfbml      : false
+      });
+      FB.Canvas.setAutoGrow();
+      FB.getLoginStatus(function(response) {
+        if (response.status === 'connected') {
+          console.log('?uid=' + response.authResponse.userID);
+          console.log('&token=' + response.authResponse.accessToken);
+          //a.screen('title-0.html');
+        } else {
+          console.log('stay in login screen');
+        }
+      });
+    };
+
+    var pendingReturns = 1;
+
+    window.fbAsyncInit = function() {
+      if (--pendingReturns === 0) {
+        fbInit();
+      }
+    };
+    var ref = document.getElementById('fb-root'),
+        fbJs = document.createElement('script');
+    fbJs.id = 'facebook-jssdk'; 
+    fbJs.async = true;
+    fbJs.src = "//connect.facebook.net/en_US/all.js";
+    ref.parentNode.insertBefore(fbJs, ref);
+
+  }());
+</script>
+
